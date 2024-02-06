@@ -1,12 +1,16 @@
 
 // LED pins
-const int redLED = 9;  
+const int redLED = 11;  
 const int greenLED = 10;  
-const int blueLED = 11;  
+const int blueLED = 9;  
 
 const int redButtonPin = 4;
 const int greenButtonPin = 3;
 const int blueButtonPin = 2;
+
+int redFadeAmount = 1;    
+int greenFadeAmount = 5;    
+int blueFadeAmount = 3;  
 
 int red = 0;
 int green = 0; 
@@ -28,26 +32,51 @@ void loop(){
     int blueButtonState = digitalRead(blueButtonPin);
 
     if (sensorValue < 100) {
-      red = 0;
-      green = 0;
-      blue = 0;
+        fade();
+    } else {
+        adjustColor();
     }
 
+    analogWrite(redLED, red);
+    analogWrite(greenLED, green);
+    analogWrite(blueLED, blue);
+
+    delay(delaytime);
+}
+
+void fade(){
+    red += redFadeAmount;
+    if (red < 1 || red > 199) {
+        redFadeAmount = -redFadeAmount;
+    }
+
+    green += greenFadeAmount;
+    if (green < 5 || green > 195) {
+        greenFadeAmount = -greenFadeAmount;
+    }
+
+    blue += blueFadeAmount;
+    if (blue < 3 || blue > 197) {
+        blueFadeAmount = -blueFadeAmount;
+    }
+
+    delay(delaytime);
+}
+
+void adjustColor() {
+    int redButtonState = digitalRead(redButtonPin);
+    int greenButtonState = digitalRead(greenButtonPin);
+    int blueButtonState = digitalRead(blueButtonPin);
+
     if (redButtonState == HIGH) {
-      red += 1;
+      red = (red + 2) % 200;
     }
 
     if (greenButtonState == HIGH) {
-      green += 1;
+      green = (green + 2) % 200;
     }
 
     if (blueButtonState == HIGH) {
-      blue += 1;
+      blue = (blue + 2) % 200;
     }
-
-    analogWrite(redLED, red % 128);
-    analogWrite(greenLED, green % 128);
-    analogWrite(blueLED, blue % 128);
-
-    delay(delaytime);
 }
